@@ -9,5 +9,5 @@ Object pool can display prefabs with static or different height.
 Each script has it's own README with instructions how to use it.
 
 ---
-## [Static Object Pool README](Static/README.md)
-## [Dynamic Object Pooling README](Dynamic/README.md)
+## [Static Object Pool README](Runtime/Static/README.md)
+## [Dynamic Object Pooling README](Runtime/Dynamic/README.md)
