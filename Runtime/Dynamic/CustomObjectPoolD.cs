@@ -55,6 +55,10 @@ namespace ObjectPool.Dynamic
         private int lastVisibleElementIndex = 0;  //index of last element which is active
 
         Action<GameObject, IPoolDataD> callbackOnSpawn;
+        /// <summary>
+        /// this is not called when method ReturnAllToPool is called
+        /// </summary>
+        public event Action<GameObject, IPoolDataD> OnDeactivateSinglePoolElement = delegate { };
         #endregion
 
         public void Awake()
@@ -302,6 +306,7 @@ namespace ObjectPool.Dynamic
             {
                 if (poolElement.PoolElementId == prefab.GetComponent<IPoolDataD>().PoolElementId)
                 {
+                    OnDeactivateSinglePoolElement?.Invoke(prefab, poolElement);
                     prefab.SetActive(false);
                 }
             }
