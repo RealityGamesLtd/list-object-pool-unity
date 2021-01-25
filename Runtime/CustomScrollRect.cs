@@ -706,12 +706,6 @@ namespace UI.Widget
         /// </example>
         public virtual void OnBeginDrag(PointerEventData eventData)
         {
-            if (Input.mousePosition.x / UnityEngine.Screen.width <= 0.08f)
-            {
-                m_Dragging = false;
-                return;
-            }
-
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
 
