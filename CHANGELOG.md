@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.0] - 2021-01-25
+## [1.2.0] - 2021-02-01
 ### Changed
 - Changed height from screen height to CustomSrollRect viewport height
 
