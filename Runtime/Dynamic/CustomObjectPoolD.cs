@@ -76,13 +76,18 @@ namespace ObjectPool.Dynamic
         {
             if (dataList == null || !dataList.Any())
             {
-                Debug.LogError("data liust is empty or null");
+                Debug.LogError("data list is empty or null");
                 return;
             }
             this.callbackOnSpawn = callbackOnSpawn;
             ScrollRectElement.onValueChanged.RemoveAllListeners();
 
-            viewportHeight = Screen.height / GetComponentInParent<Canvas>().scaleFactor + GetComponent<RectTransform>().offsetMax.y - GetComponent<RectTransform>().offsetMin.y;
+            if (ScrollRectElement.viewport == null)
+            {
+                Debug.LogError("Viewport is null in custom scroll rect");
+                return;
+            }
+            viewportHeight = ScrollRectElement.viewport.GetComponent<RectTransform>().rect.height;
 
             #region Check if prefab is null
             if (prefab == null)
