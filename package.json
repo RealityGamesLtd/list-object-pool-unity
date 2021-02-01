@@ -1,8 +1,8 @@
 {
   "name": "com.realitygames.listobjectpool",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "displayName": "List Object Pool",
-  "description": "Project is for displaying lists of data by small amount of prefabs which effects much better performance. Object pool can display prefabs with static or different height. Each script has it's own README with instructions how to use it.",
+  "description": "",
   "unity": "2019.4",
   "keywords": [
     "list",
