@@ -54,6 +54,8 @@ namespace ObjectPool.Dynamic
         private int firstVisibleElementIndex = 0; //index of first element which is active
         private int lastVisibleElementIndex = 0;  //index of last element which is active
 
+        public int ElementsCount { get; private set; } = 0;
+
         Action<GameObject, IPoolDataD> callbackOnSpawn;
         /// <summary>
         /// this is not called when method ReturnAllToPool is called
@@ -101,6 +103,7 @@ namespace ObjectPool.Dynamic
             ReturnAllToPool();
             poolElementsData = new List<IPoolDataD>(dataList);
             poolElementsDataLastIndex = poolElementsData.Count - 1;
+            ElementsCount = poolElementsData.Count;
 
             if (poolElementsData.Count > 0)
             {
