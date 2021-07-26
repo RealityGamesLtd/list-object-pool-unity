@@ -181,6 +181,7 @@ namespace ObjectPool.Dynamic
             ReturnAllToPool();
             ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta = new Vector2(ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta.x, 0);
             poolElementsData = new List<IPoolDataD>();
+            ElementsCount = 0;
         }
         #endregion
 
