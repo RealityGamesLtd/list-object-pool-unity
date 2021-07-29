@@ -46,6 +46,7 @@ namespace UI.Utils
         /// this is not called when method ReturnAllToPool is called
         /// </summary>
         public event Action<GameObject, IPoolDataS> OnDeactivateSinglePoolElement = delegate { };
+        public event Action<int> OnSpawned = delegate { };
         #endregion
 
         #region Public methods
@@ -98,6 +99,7 @@ namespace UI.Utils
             if(dataList == null || dataList.Count < 1)
             {
                 Clear();
+                OnSpawned?.Invoke(0);
                 return;
             }
 
@@ -107,6 +109,7 @@ namespace UI.Utils
             if (ScrollRect.viewport == null)
             {
                 Debug.LogError("Viewport is null in custom scroll rect");
+                OnSpawned?.Invoke(0);
                 return;
             }
             
@@ -118,12 +121,14 @@ namespace UI.Utils
             {
                 Debug.LogError("Setup ObjectPooling - poolElement field is null. Script which uses ObjectPooling should set prefab to spawn in pool. To do that use SetPoolElement method.");
                 ScrollRect.content.sizeDelta = new Vector2(ScrollRect.content.sizeDelta.x, 0);
+                OnSpawned?.Invoke(0);
                 return;
             }
             #endregion
             ReturnAllToPool();
             ScrollRect.verticalNormalizedPosition = 1;
             poolElementsData = new List<IPoolDataS>(dataList);
+            OnSpawned?.Invoke(poolElementsData.Count);
 
             if (poolElementsData.Count > 0)
             {

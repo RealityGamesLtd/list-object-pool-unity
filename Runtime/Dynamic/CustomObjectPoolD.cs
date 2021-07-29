@@ -54,13 +54,12 @@ namespace ObjectPool.Dynamic
         private int firstVisibleElementIndex = 0; //index of first element which is active
         private int lastVisibleElementIndex = 0;  //index of last element which is active
 
-        public int ElementsCount { get; private set; } = 0;
-
         Action<GameObject, IPoolDataD> callbackOnSpawn;
         /// <summary>
         /// this is not called when method ReturnAllToPool is called
         /// </summary>
         public event Action<GameObject, IPoolDataD> OnDeactivateSinglePoolElement = delegate { };
+        public event Action<int> OnSpawned = delegate { };
         #endregion
 
         public void Awake()
@@ -78,7 +77,7 @@ namespace ObjectPool.Dynamic
         {
             if (dataList == null || !dataList.Any())
             {
-                Debug.LogError("data list is empty or null");
+                OnSpawned?.Invoke(0);
                 return;
             }
             this.callbackOnSpawn = callbackOnSpawn;
@@ -87,6 +86,7 @@ namespace ObjectPool.Dynamic
             if (ScrollRectElement.viewport == null)
             {
                 Debug.LogError("Viewport is null in custom scroll rect");
+                OnSpawned?.Invoke(0);
                 return;
             }
             viewportHeight = ScrollRectElement.viewport.GetComponent<RectTransform>().rect.height;
@@ -96,6 +96,7 @@ namespace ObjectPool.Dynamic
             {
                 Debug.LogError("Setup ObjectPooling - poolElement field is null. Script which uses ObjectPooling should set prefab to spawn in pool. To do that use SetPoolElement method.");
                 ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta = new Vector2(ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta.x, 0);
+                OnSpawned?.Invoke(0);
                 return;
             }
             #endregion
@@ -103,7 +104,7 @@ namespace ObjectPool.Dynamic
             ReturnAllToPool();
             poolElementsData = new List<IPoolDataD>(dataList);
             poolElementsDataLastIndex = poolElementsData.Count - 1;
-            ElementsCount = poolElementsData.Count;
+            OnSpawned?.Invoke(poolElementsData.Count);
 
             if (poolElementsData.Count > 0)
             {
@@ -181,7 +182,6 @@ namespace ObjectPool.Dynamic
             ReturnAllToPool();
             ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta = new Vector2(ScrollRectElement.content.GetComponent<RectTransform>().sizeDelta.x, 0);
             poolElementsData = new List<IPoolDataD>();
-            ElementsCount = 0;
         }
         #endregion
 
