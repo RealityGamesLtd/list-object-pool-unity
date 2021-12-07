@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UI.Widget
+namespace UI.Widget.Helpers
 {
     [AddComponentMenu("UI/Custom Scroll Rect")]
     [SelectionBase]

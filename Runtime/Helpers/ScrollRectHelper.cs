@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UI.Widget
+namespace UI.Widget.Helpers
 {
     [RequireComponent(typeof(CustomScrollRect))]
     [AddComponentMenu("UI/Extensions/Scroll Rect Helper")]
