@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UI.Widget;
+using UI.Widget.Helpers;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ObjectPool.Dynamic
 {
