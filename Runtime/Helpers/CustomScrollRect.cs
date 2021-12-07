@@ -569,15 +569,6 @@ namespace UI.Widget.Helpers
         {
             base.OnValidate();
             SetDirtyCaching();
-            var handler = GetComponentInParent<DragHandler>();
-            if (handler == null)
-            {
-                Debug.LogError($"No {nameof(DragHandler)} component in parent!");
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    DestroyImmediate(this);
-                };
-            }
         }
 #endif
 

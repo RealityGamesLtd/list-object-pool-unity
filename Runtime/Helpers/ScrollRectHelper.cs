@@ -30,22 +30,6 @@ namespace UI.Widget.Helpers
 
         private DragHandler dragHandler;
 
-#if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-            var handler = GetComponentInParent<DragHandler>();
-            if (handler == null)
-            {
-                Debug.LogError($"No {nameof(DragHandler)} component in parent!");
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    DestroyImmediate(this);
-                };
-            }
-        }
-#endif
-
         protected override void OnEnable()
         {
             base.OnEnable();
