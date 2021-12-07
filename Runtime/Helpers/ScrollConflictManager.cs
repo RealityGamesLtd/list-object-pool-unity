@@ -82,20 +82,28 @@ namespace UI.Widget.Helpers
             {
                 if (horizontal > vertical)
                 {
-                    scrollOther = true;
                     //disable the current scroll rect so it doesnt move.
-                    _myScrollRect.enabled = false;
-                    _parentScrollRect.OnBeginDrag(eventData);
-                    _parentScrollRectHelper.OnBeginDrag(eventData);
+                    ToggleParentScroll(eventData);
+                }
+                else if (vertical > horizontal)
+                {
+                    scrollOther = false;
+                    _parentScrollRect.enabled = false;
                 }
             }
             else if (vertical > horizontal)
             {
-                scrollOther = true;
                 //disable the current scroll rect so it doesnt move.
-                _myScrollRect.enabled = false;
-                _parentScrollRect.OnBeginDrag(eventData);
+                ToggleParentScroll(eventData);
             }
+        }
+
+        private void ToggleParentScroll(PointerEventData eventData)
+        {
+            scrollOther = true;
+            _myScrollRect.enabled = false;
+            _parentScrollRect.OnBeginDrag(eventData);
+            _parentScrollRectHelper.OnBeginDrag(eventData);
         }
 
         //IEndDragHandler
@@ -109,6 +117,10 @@ namespace UI.Widget.Helpers
                 _myScrollRect.enabled = true;
                 _parentScrollRect.OnEndDrag(eventData);
                 _parentScrollRectHelper.OnEndDrag(eventData);
+            }
+            else
+            {
+                _parentScrollRect.enabled = true;
             }
         }
 
