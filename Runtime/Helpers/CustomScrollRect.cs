@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -17,7 +18,7 @@ namespace UI.Widget
     /// <remarks>
     /// ScrollRect will not do any clipping on its own. Combined with a Mask component, it can be turned into a scroll view.
     /// </remarks>
-    public class CustomScrollRect : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ILayoutElement, ILayoutGroup
+    public class CustomScrollRect : UIBehaviour, IScrollHandler, ICanvasElement, ILayoutElement, ILayoutGroup
     {
         public event Func<Vector2, bool> OnDragging = delegate { return false; };
 
@@ -494,7 +495,7 @@ namespace UI.Widget
         private float m_VSliderWidth;
 
         [System.NonSerialized] private RectTransform m_Rect;
-        private RectTransform rectTransform
+        private RectTransform RectTransform
         {
             get
             {
@@ -506,6 +507,7 @@ namespace UI.Widget
 
         private RectTransform m_HorizontalScrollbarRect;
         private RectTransform m_VerticalScrollbarRect;
+        private DragHandler dragHandler;
 
         private DrivenRectTransformTracker m_Tracker;
 
@@ -557,9 +559,39 @@ namespace UI.Widget
             m_VSliderWidth = (m_VerticalScrollbarRect == null ? 0 : m_VerticalScrollbarRect.rect.width);
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            dragHandler = GetComponentInParent<DragHandler>();
+        }
+
+#if UNITY_EDITOR
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            SetDirtyCaching();
+            var handler = GetComponentInParent<DragHandler>();
+            if (handler == null)
+            {
+                Debug.LogError($"No {nameof(DragHandler)} component in parent!");
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    DestroyImmediate(this);
+                };
+            }
+        }
+#endif
+
         protected override void OnEnable()
         {
             base.OnEnable();
+            if (dragHandler)
+            {
+                dragHandler.OnBeginDragged += OnBeginDrag;
+                dragHandler.OnEndDragged += OnEndDrag;
+                dragHandler.OnDragged += OnDrag;
+                dragHandler.OnInitializePotentialDragged += OnInitializePotentialDrag;
+            }
 
             if (m_HorizontalScrollbar)
                 m_HorizontalScrollbar.onValueChanged.AddListener(SetHorizontalNormalizedPosition);
@@ -572,6 +604,14 @@ namespace UI.Widget
 
         protected override void OnDisable()
         {
+            if (dragHandler)
+            {
+                dragHandler.OnBeginDragged -= OnBeginDrag;
+                dragHandler.OnEndDragged -= OnEndDrag;
+                dragHandler.OnDragged -= OnDrag;
+                dragHandler.OnInitializePotentialDragged -= OnInitializePotentialDrag;
+            }
+
             CanvasUpdateRegistry.UnRegisterCanvasElementForRebuild(this);
 
             if (m_HorizontalScrollbar)
@@ -584,7 +624,7 @@ namespace UI.Widget
             m_HasRebuiltLayout = false;
             m_Tracker.Clear();
             m_Velocity = Vector2.zero;
-            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
             base.OnDisable();
         }
 
@@ -1429,7 +1469,7 @@ namespace UI.Widget
             if (!IsActive())
                 return;
 
-            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
 
         /// <summary>
@@ -1441,17 +1481,9 @@ namespace UI.Widget
                 return;
 
             CanvasUpdateRegistry.RegisterCanvasElementForLayoutRebuild(this);
-            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
 
             m_ViewRect = null;
         }
-
-#if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            SetDirtyCaching();
-        }
-
-#endif
     }
 }
