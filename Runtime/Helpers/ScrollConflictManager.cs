@@ -16,12 +16,12 @@ namespace UI.Widget.Helpers
         private DragHandler _parentDragHandler;
         private CustomScrollRect _parentScrollRect;
         private ScrollRectHelper _parentScrollRectHelper;
-
         private CustomScrollRect _myScrollRect;
-        //This tracks if the other one should be scrolling instead of the current one.
+
         private bool scrollOther;
-        //This tracks wether the other one should scroll horizontally or vertically.
-        private bool scrollOtherHorizontally;
+        private bool scrolledVerticaly;
+        private bool scrolledHorizontaly;
+        private PointerEventData _eventData;
 
         public bool IsDragged { get; private set; }
 
@@ -31,22 +31,10 @@ namespace UI.Widget.Helpers
             _parentDragHandler = transform.parent.GetComponentInParent<DragHandler>();
             _parentScrollRect = transform.parent.GetComponentInParent<CustomScrollRect>();
             _parentScrollRectHelper = transform.parent.GetComponentInParent<ScrollRectHelper>();
-            //Get the current scroll rect so we can disable it if the other one is scrolling
             _myScrollRect = GetComponent<CustomScrollRect>();
-            //If the current scroll Rect has the vertical checked then the other one will be scrolling horizontally.
-            scrollOtherHorizontally = _myScrollRect.vertical;
-            //Check some attributes to let the user know if this wont work as expected
-            if (scrollOtherHorizontally)
-            {
-                if (_myScrollRect.horizontal)
-                    Debug.Log("You have added the SecondScrollRect to a scroll view that already has both directions selected");
-                if (!_parentScrollRect.horizontal)
-                    Debug.Log("The other scroll rect doesnt support scrolling horizontally");
-            }
-            else if (!_parentScrollRect.vertical)
-            {
-                Debug.Log("The other scroll rect doesnt support scrolling vertically");
-            }
+
+            scrolledVerticaly = _myScrollRect.vertical;
+            scrolledHorizontaly = _myScrollRect.horizontal;
         }
 
         protected override void OnEnable()
@@ -57,6 +45,14 @@ namespace UI.Widget.Helpers
                 _parentDragHandler.OnBeginDragged += OnBeginDrag;
                 _parentDragHandler.OnEndDragged += OnEndDrag;
                 _parentDragHandler.OnDragged += OnDrag;
+            }
+        }
+
+        private void Update()
+        {
+            if (scrollOther)
+            {
+                _parentScrollRect.OnDrag(_eventData);
             }
         }
 
@@ -71,33 +67,6 @@ namespace UI.Widget.Helpers
             }
         }
 
-        //IBeginDragHandler
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            IsDragged = true;
-            //Get the absolute values of the x and y differences so we can see which one is bigger and scroll the other scroll rect accordingly
-            float horizontal = Mathf.Abs(eventData.position.x - eventData.pressPosition.x);
-            float vertical = Mathf.Abs(eventData.position.y - eventData.pressPosition.y);
-            if (scrollOtherHorizontally)
-            {
-                if (horizontal > vertical)
-                {
-                    //disable the current scroll rect so it doesnt move.
-                    ToggleParentScroll(eventData);
-                }
-                else if (vertical > horizontal)
-                {
-                    scrollOther = false;
-                    _parentScrollRect.enabled = false;
-                }
-            }
-            else if (vertical > horizontal)
-            {
-                //disable the current scroll rect so it doesnt move.
-                ToggleParentScroll(eventData);
-            }
-        }
-
         private void ToggleParentScroll(PointerEventData eventData)
         {
             scrollOther = true;
@@ -106,7 +75,51 @@ namespace UI.Widget.Helpers
             _parentScrollRectHelper.OnBeginDrag(eventData);
         }
 
-        //IEndDragHandler
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            IsDragged = true;
+            float horizontal = Mathf.Abs(eventData.position.x - eventData.pressPosition.x);
+            float vertical = eventData.position.y - eventData.pressPosition.y;
+
+            if (scrolledHorizontaly)
+            {
+                if (horizontal > Mathf.Abs(vertical))
+                {
+                    scrollOther = false;
+                    _parentScrollRect.enabled = false;
+                }
+                else if (Mathf.Abs(vertical) > horizontal)
+                {
+                    ToggleParentScroll(eventData);
+                }
+            }
+            else if (scrolledVerticaly)
+            {
+                if (_myScrollRect.verticalNormalizedPosition >= 0.99f && vertical < 0)
+                {
+                    ToggleParentScroll(eventData);
+                }
+                else if (_myScrollRect.verticalNormalizedPosition <= 0.01f && vertical > 0)
+                {
+                    ToggleParentScroll(eventData);
+                }
+                else if (Mathf.Abs(vertical) > horizontal)
+                {
+                    scrollOther = false;
+                    _parentScrollRect.enabled = false;
+                }
+                else
+                {
+                    ToggleParentScroll(eventData);
+                }
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            _eventData = eventData;
+        }
+
         public void OnEndDrag(PointerEventData eventData)
         {
             IsDragged = false;
@@ -122,22 +135,6 @@ namespace UI.Widget.Helpers
             {
                 _parentScrollRect.enabled = true;
             }
-        }
-
-        private void Update()
-        {
-            if (scrollOther)
-            {
-                _parentScrollRect.OnDrag(_eventData);
-            }
-        }
-
-        private PointerEventData _eventData;
-
-        //IDragHandler
-        public void OnDrag(PointerEventData eventData)
-        {
-            _eventData = eventData;
         }
     }
 }
