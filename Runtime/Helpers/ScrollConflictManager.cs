@@ -95,7 +95,8 @@ namespace UI.Widget.Helpers
             }
             else if (scrolledVerticaly)
             {
-                if (_myScrollRect.verticalNormalizedPosition >= 0.99f && vertical < 0)
+                if ((_myScrollRect.verticalNormalizedPosition >= 0.99f ||
+                    _myScrollRect.content.anchoredPosition.y <= 0.01f) && vertical < 0)
                 {
                     ToggleParentScroll(eventData);
                 }
