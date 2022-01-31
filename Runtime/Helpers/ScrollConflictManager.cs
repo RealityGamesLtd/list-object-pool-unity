@@ -95,12 +95,12 @@ namespace UI.Widget.Helpers
             }
             else if (scrolledVerticaly)
             {
-                if ((_myScrollRect.verticalNormalizedPosition >= 0.99f ||
+                if ((_myScrollRect.verticalNormalizedPosition >= (1f - Mathf.Epsilon) ||
                     _myScrollRect.content.anchoredPosition.y <= 0.01f) && vertical < 0)
                 {
                     ToggleParentScroll(eventData);
                 }
-                else if (_myScrollRect.verticalNormalizedPosition <= 0.01f && vertical > 0)
+                else if (_myScrollRect.verticalNormalizedPosition <= Mathf.Epsilon && vertical > 0)
                 {
                     ToggleParentScroll(eventData);
                 }
