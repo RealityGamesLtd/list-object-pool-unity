@@ -150,6 +150,8 @@ namespace ObjectPool.Dynamic
             //ScrollRectElement.verticalNormalizedPosition = 1;
             foreach (GameObject poolElement in poolPrefabs)
             {
+                var iPoolData = prefab.GetComponent<IPoolDataD>();
+                iPoolData.Dispose();
                 poolElement.SetActive(false);
             }
         }
@@ -289,8 +291,10 @@ namespace ObjectPool.Dynamic
         {
             foreach (GameObject prefab in poolPrefabs)
             {
-                if (poolElement.PoolElementId == prefab.GetComponent<IPoolDataD>().PoolElementId)
+                var iPoolData = prefab.GetComponent<IPoolDataD>();
+                if (poolElement.PoolElementId == iPoolData.PoolElementId)
                 {
+                    iPoolData.Dispose();
                     prefab.SetActive(false);
                 }
             }
@@ -311,7 +315,7 @@ namespace ObjectPool.Dynamic
             #region Activate prefab
             GameObject prefab = GetFromPool();
             prefab.SetActive(true);
-            prefab.GetComponent<PoolPrefabD>().Setup(poolElementData.PoolElementId, poolElementData.PrefabHeight, poolElementData.PrefabVerticalPosition);
+            prefab.GetComponent<PoolPrefabD>().Setup(poolElementData.PoolElementId, poolElementData.PrefabHeight, poolElementData.PrefabVerticalPosition, poolElementData.DisposeCallback);
             if (callbackOnSpawn != null) callbackOnSpawn(prefab, poolElementData);
             RectTransform prefabRT = prefab.GetComponent<RectTransform>();
             prefabRT.anchoredPosition = new Vector2(prefabRT.anchoredPosition.x, poolElementData.PrefabVerticalPosition);

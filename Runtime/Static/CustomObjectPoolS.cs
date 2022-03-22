@@ -242,7 +242,9 @@ namespace UI.Utils
         {
             foreach (GameObject poolElement in poolPrefabs)
             {
-                if (poolElement != null) poolElement.SetActive(false);
+                var iPoolData = poolElement.GetComponent<PoolPrefabS>();
+                iPoolData.Dispose();
+                poolElement.SetActive(false);
             }
         }
 
@@ -367,9 +369,11 @@ namespace UI.Utils
         {
             foreach (GameObject prefab in poolPrefabs)
             {
-                if (poolElement.PoolElementIndex == prefab.GetComponent<PoolPrefabS>().PoolElementIndex)
+                var iPoolData = prefab.GetComponent<PoolPrefabS>();
+                if (poolElement.PoolElementIndex == iPoolData.PoolElementIndex)
                 {
                     OnDeactivateSinglePoolElement?.Invoke(prefab, poolElement);
+                    iPoolData.Dispose();
                     prefab.SetActive(false);
                 }
             }
@@ -392,7 +396,7 @@ namespace UI.Utils
             if(prefab != null)
             {
                 prefab.SetActive(true);
-                prefab.GetComponent<PoolPrefabS>().SetIndex(poolElementData.PoolElementIndex);
+                prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex, poolElementData.DisposeCallback);
                 callbackOnSpawn?.Invoke(prefab, poolElementData);
                 RectTransform prefabRT = prefab.GetComponent<RectTransform>();
                 prefabRT.anchoredPosition = new Vector2(prefabRT.anchoredPosition.x, -(poolElementData.PoolElementIndex * poolElementHeight));

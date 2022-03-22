@@ -175,6 +175,8 @@ namespace ObjectPool.Static
         {
             foreach (GameObject poolElement in poolPrefabs)
             {
+                var iPoolData = poolElement.GetComponent<PoolPrefabS>();
+                iPoolData.Dispose();
                 poolElement.SetActive(false);
             }
         }
@@ -293,6 +295,8 @@ namespace ObjectPool.Static
             {
                 if (poolElement.PoolElementIndex == prefab.GetComponent<PoolPrefabS>().PoolElementIndex)
                 {
+                    var iPoolData = prefab.GetComponent<PoolPrefabS>();
+                    iPoolData.Dispose();
                     prefab.SetActive(false);
                 }
             }
@@ -313,7 +317,7 @@ namespace ObjectPool.Static
             #region Activate prefab
             GameObject prefab = GetFromPool();
             prefab.SetActive(true);
-            prefab.GetComponent<PoolPrefabS>().SetIndex(poolElementData.PoolElementIndex);
+            prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex, poolElementData.DisposeCallback);
             if (callbackOnSpawn != null) callbackOnSpawn(prefab, poolElementData);
             RectTransform prefabRT = prefab.GetComponent<RectTransform>();
             prefabRT.anchoredPosition = new Vector2(prefabRT.anchoredPosition.x, -(poolElementData.PoolElementIndex * poolElementHeight));
