@@ -242,8 +242,7 @@ namespace UI.Utils
         {
             foreach (GameObject poolElement in poolPrefabs)
             {
-                var iPoolData = poolElement.GetComponent<PoolPrefabS>();
-                iPoolData.Dispose();
+                DisposeElement(poolElement);
                 poolElement.SetActive(false);
             }
         }
@@ -373,10 +372,22 @@ namespace UI.Utils
                 if (poolElement.PoolElementIndex == iPoolData.PoolElementIndex)
                 {
                     OnDeactivateSinglePoolElement?.Invoke(prefab, poolElement);
-                    iPoolData.Dispose();
+
+                    DisposeElement(prefab);
                     prefab.SetActive(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// Disposes element if is disposable
+        /// </summary>
+        /// <param name="go">Element to dispose</param>
+        private void DisposeElement(GameObject go)
+        {
+            var disposable = go.GetComponent<IDisposable>();
+            if (disposable != null)
+                disposable.Dispose();
         }
 
         // Check if pool element is currently active. If not then activate it and setup
@@ -396,7 +407,7 @@ namespace UI.Utils
             if(prefab != null)
             {
                 prefab.SetActive(true);
-                prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex, poolElementData.DisposeCallback);
+                prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex);
                 callbackOnSpawn?.Invoke(prefab, poolElementData);
                 RectTransform prefabRT = prefab.GetComponent<RectTransform>();
                 prefabRT.anchoredPosition = new Vector2(prefabRT.anchoredPosition.x, -(poolElementData.PoolElementIndex * poolElementHeight));

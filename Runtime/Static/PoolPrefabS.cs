@@ -10,17 +10,10 @@ namespace ObjectPool.Static
     public class PoolPrefabS : MonoBehaviour, IPoolDataS
     {
         public int PoolElementIndex { get; set; }
-        public Action DisposeCallback { get; private set; }
 
-        public void Setup(int poolElementIndex, Action disposeCallback)
+        public void Setup(int poolElementIndex)
         {
             PoolElementIndex = poolElementIndex;
-            DisposeCallback = disposeCallback;
-        }
-
-        public void Dispose()
-        {
-            DisposeCallback?.Invoke();
         }
     }
 }

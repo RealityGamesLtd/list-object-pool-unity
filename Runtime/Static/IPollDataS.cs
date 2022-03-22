@@ -1,6 +1,6 @@
 ﻿namespace ObjectPool.Static
 {
-    public interface IPoolDataS : IDisposable
+    public interface IPoolDataS
     {
         int PoolElementIndex { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿namespace ObjectPool.Dynamic
 {
-    public interface IPoolDataD : IDisposable
+    public interface IPoolDataD
     {
         string PoolElementId { get; set; }
         float PrefabHeight { get; set; }

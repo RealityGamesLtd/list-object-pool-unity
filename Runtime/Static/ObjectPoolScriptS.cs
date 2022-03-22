@@ -175,10 +175,20 @@ namespace ObjectPool.Static
         {
             foreach (GameObject poolElement in poolPrefabs)
             {
-                var iPoolData = poolElement.GetComponent<PoolPrefabS>();
-                iPoolData.Dispose();
+                DisposeElement(poolElement);
                 poolElement.SetActive(false);
             }
+        }
+
+        /// <summary>
+        /// Disposes element if is disposable
+        /// </summary>
+        /// <param name="go">Element to dispose</param>
+        private void DisposeElement(GameObject go)
+        {
+            var disposable = go.GetComponent<IDisposable>();
+            if (disposable != null)
+                disposable.Dispose();
         }
 
         /// <summary>
@@ -293,10 +303,10 @@ namespace ObjectPool.Static
         {
             foreach (GameObject prefab in poolPrefabs)
             {
-                if (poolElement.PoolElementIndex == prefab.GetComponent<PoolPrefabS>().PoolElementIndex)
+                var poolPrefabS = prefab.GetComponent<PoolPrefabS>();
+                if (poolElement.PoolElementIndex == poolPrefabS.PoolElementIndex)
                 {
-                    var iPoolData = prefab.GetComponent<PoolPrefabS>();
-                    iPoolData.Dispose();
+                    DisposeElement(prefab);
                     prefab.SetActive(false);
                 }
             }
@@ -317,7 +327,7 @@ namespace ObjectPool.Static
             #region Activate prefab
             GameObject prefab = GetFromPool();
             prefab.SetActive(true);
-            prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex, poolElementData.DisposeCallback);
+            prefab.GetComponent<PoolPrefabS>().Setup(poolElementData.PoolElementIndex);
             if (callbackOnSpawn != null) callbackOnSpawn(prefab, poolElementData);
             RectTransform prefabRT = prefab.GetComponent<RectTransform>();
             prefabRT.anchoredPosition = new Vector2(prefabRT.anchoredPosition.x, -(poolElementData.PoolElementIndex * poolElementHeight));
