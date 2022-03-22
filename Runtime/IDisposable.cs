@@ -4,7 +4,7 @@ namespace ObjectPool
 {
     public interface IDisposable
     {
-        Action DisposeCallback { get; }
+        Action DisposeCallback { get; set; }
         void Dispose();
     }
 }
