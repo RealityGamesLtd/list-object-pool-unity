@@ -188,6 +188,7 @@ namespace ObjectPool.Dynamic
         {
             double currentScrollPosition = ScrollRectElement.content.anchoredPosition.y;
             double bottomScrollPosition = currentScrollPosition + viewportHeight;
+            int poolElementsDataMaxIndex = poolElementsData.Count - 1;
 
             if (scrollPosition > currentScrollPosition && currentScrollPosition < 0 || scrollPosition < currentScrollPosition && bottomScrollPosition > ScrollRectElement.content.rect.height)
                 return;
@@ -195,17 +196,17 @@ namespace ObjectPool.Dynamic
             #region Scroll down
             if (scrollPosition < currentScrollPosition)
             {
-                float offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabVerticalPosition);
-                float offsetFirstElementHeight = poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabHeight;
+                float offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
+                float offsetFirstElementHeight = poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabHeight;
 
                 while (currentScrollPosition > offsetFirstElementPositionABS + offsetFirstElementHeight)
                 {
                     if (firstVisibleElementIndex < poolElementsDataLastIndex)
                     {
-                        ReturnToPool(poolElementsData[firstVisibleElementIndex]);
+                        ReturnToPool(poolElementsData[Mathf.Clamp(firstVisibleElementIndex, 0, poolElementsDataMaxIndex)]);
                         firstVisibleElementIndex++;
-                        offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabVerticalPosition);
-                        offsetFirstElementHeight = poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabHeight;
+                        offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
+                        offsetFirstElementHeight = poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabHeight;
                     }
                     else
                     {
@@ -213,20 +214,20 @@ namespace ObjectPool.Dynamic
                     }
                 }
 
-                float offsetLastElementPositionABS = Mathf.Abs(poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabVerticalPosition);
-                float offsetLastElementHeight = poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabHeight;
+                float offsetLastElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
+                float offsetLastElementHeight = poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabHeight;
 
                 while (bottomScrollPosition > offsetLastElementPositionABS + offsetLastElementHeight)
                 {
                     if (lastVisibleElementIndex < poolElementsDataLastIndex)
                     {
                         lastVisibleElementIndex++;
-                        SetupPoolPrefab(poolElementsData[lastVisibleElementIndex]);
-                        offsetLastElementPositionABS = Mathf.Abs(poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabVerticalPosition);
-                        offsetLastElementHeight = poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabHeight;
+                        SetupPoolPrefab(poolElementsData[Mathf.Clamp(lastVisibleElementIndex, 0, poolElementsDataMaxIndex)]);
+                        offsetLastElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
                     }
                     else
                     {
+                        offsetLastElementHeight = poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabHeight;
                         break;
                     }
                 }
@@ -238,15 +239,15 @@ namespace ObjectPool.Dynamic
             #region Scroll up
             else if (scrollPosition > currentScrollPosition)
             {
-                float offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabVerticalPosition);
+                float offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
 
                 while (currentScrollPosition < offsetFirstElementPositionABS)
                 {
                     if (firstVisibleElementIndex > 0)
                     {
                         firstVisibleElementIndex--;
-                        SetupPoolPrefab(poolElementsData[firstVisibleElementIndex]);
-                        offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab)].PrefabVerticalPosition);
+                        SetupPoolPrefab(poolElementsData[Mathf.Clamp(firstVisibleElementIndex, 0, poolElementsDataMaxIndex)]);
+                        offsetFirstElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(firstVisibleElementIndex + CheckFirstIndexWithOffset(offsetFirstPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
                     }
                     else
                     {
@@ -254,15 +255,15 @@ namespace ObjectPool.Dynamic
                     }
                 }
 
-                float offsetLastElementPositionABS = Mathf.Abs(poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabVerticalPosition);
+                float offsetLastElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
 
                 while (bottomScrollPosition < offsetLastElementPositionABS)
                 {
                     if (lastVisibleElementIndex > 0)
                     {
-                        ReturnToPool(poolElementsData[lastVisibleElementIndex]);
+                        ReturnToPool(poolElementsData[Mathf.Clamp(lastVisibleElementIndex, 0, poolElementsDataMaxIndex)]);
                         lastVisibleElementIndex--;
-                        offsetLastElementPositionABS = Mathf.Abs(poolElementsData[lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab)].PrefabVerticalPosition);
+                        offsetLastElementPositionABS = Mathf.Abs(poolElementsData[Mathf.Clamp(lastVisibleElementIndex - CheckLastIndexWithOffset(offsetLastPrefab), 0, poolElementsDataMaxIndex)].PrefabVerticalPosition);
                     }
                     else
                     {
