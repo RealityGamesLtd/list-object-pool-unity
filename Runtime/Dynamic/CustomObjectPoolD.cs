@@ -18,7 +18,6 @@ namespace ObjectPool.Dynamic
     ///     - "ReturnAllToPool" - deactivate all prefabs
     ///     - "SetPrefabsOffset" - set offset prefabs (which will be not returned from pool when are out of view)
     /// </summary>
-    [Obsolete("Not used any more. Use the ParametrizedCustomObjectPoolD instead", false)]
     [RequireComponent(typeof(CustomScrollRect))]
     public class CustomObjectPoolD : MonoBehaviour
     {
